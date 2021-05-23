@@ -34,8 +34,7 @@ Source8:       emacs-terminal.sh
 Source9:       emacs.service
 Source10:      %{name}.appdata.xml
 # rhbz#713600
-Patch1:        emacs-spellchecker.patch
-Patch2:        emacs-system-crypto-policies.patch
+Patch1:        emacs-system-crypto-policies.patch
 
 BuildRequires: gcc
 BuildRequires: atk-devel
@@ -178,8 +177,7 @@ Development header files for Emacs.
 #%{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
 %setup -q -n emacs-%{commit}
 
-%patch1 -p1 -b .spellchecker
-%patch2 -p1 -b .system-crypto-policies
+%patch1 -p1 -b .system-crypto-policies
 
 #autoconf
 ./autogen.sh
