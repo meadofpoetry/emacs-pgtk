@@ -112,22 +112,6 @@ without leaving the editor.
 
 This package provides an emacs binary with support for X windows.
 
-# %package nox
-# Summary:       GNU Emacs text editor without X support
-# Requires(preun): %{_sbindir}/alternatives
-# Requires(posttrans): %{_sbindir}/alternatives
-# Requires:      emacs-common = %{epoch}:%{version}-%{release}
-# Provides:      emacs(bin) = %{epoch}:%{version}-%{release}
-
-# %description nox
-# Emacs is a powerful, customizable, self-documenting, modeless text
-# editor. Emacs contains special code editing features, a scripting
-# language (elisp), and the capability to read mail, news, and more
-# without leaving the editor.
-
-# This package provides an emacs binary with no X windows support for running
-# on a terminal.
-
 %package common
 Summary:       Emacs common files
 # The entire source code is GPLv3+ except lib-src/etags.c which is
@@ -218,7 +202,7 @@ ln -s ../configure .
 LDFLAGS=-Wl,-z,relro;  export LDFLAGS;
 
 %configure --with-dbus --with-gif --with-jpeg --with-png --with-rsvg \
-           --with-tiff --with-xft --with-xpm --with-x-toolkit=gtk3 --with-gpm=no \
+           --with-tiff --with-xft --with-xpm --with-gpm=no \
            --with-xwidgets --with-modules --with-harfbuzz --with-cairo --with-json \
            --with-pgtk --with-native-compilation --enable-link-time-optimization
 
@@ -243,18 +227,8 @@ for i in $(seq 0 $(( ${#fs[*]} - 1 ))); do
 done
 cd ..
 
-# Build binary without X support
-# mkdir build-nox && cd build-nox
-# ln -s ../configure .
-# %configure --with-x=no --with-modules --with-json \
-#            --with-native-compilation --enable-link-time-optimization
-
-# %make_build NATIVE_FULL_AOT=1 bootstrap
-# %{setarch} %make_build
-# cd ..
-
 # Remove versioned file so that we end up with .1 suffix and only one DOC file
-rm build-{gtk,nox}/src/emacs-%{version}.*
+rm build-gtk/src/emacs-%{version}.*
 
 # Create pkgconfig file
 cat > emacs.pc << EOF
@@ -294,10 +268,6 @@ gunzip %{buildroot}%{_datadir}/emacs/%{version}/lisp/jka-cmpr-hook.el.gz
 
 # Install emacs.pdmp of the emacs with GTK+
 install -p -m 0644 build-gtk/src/emacs.pdmp %{buildroot}%{_bindir}/emacs-%{version}.pdmp
-
-# Install the emacs without X
-# install -p -m 0755 build-nox/src/emacs %{buildroot}%{_bindir}/emacs-%{version}-nox
-# install -p -m 0644 build-nox/src/emacs.pdmp %{buildroot}%{_bindir}/emacs-%{version}-nox.pdmp
 
 # Make sure movemail isn't setgid
 chmod 755 %{buildroot}%{emacs_libexecdir}/movemail
@@ -387,14 +357,6 @@ rm -rf %{buildroot}%{prefix}/lib/debug/usr/libexec/emacs/28.0.50
 %posttrans
 %{_sbindir}/alternatives --install %{_bindir}/emacs emacs %{_bindir}/emacs-%{version} 80
 
-# %preun nox
-# %{_sbindir}/alternatives --remove emacs %{_bindir}/emacs-%{version}-nox
-# %{_sbindir}/alternatives --remove emacs-nox %{_bindir}/emacs-%{version}-nox
-
-# %posttrans nox
-# %{_sbindir}/alternatives --install %{_bindir}/emacs emacs %{_bindir}/emacs-%{version}-nox 70
-# %{_sbindir}/alternatives --install %{_bindir}/emacs-nox emacs-nox %{_bindir}/emacs-%{version}-nox 60
-
 %preun common
 %{_sbindir}/alternatives --remove emacs.etags %{_bindir}/etags.emacs
 
@@ -413,12 +375,7 @@ rm -rf %{buildroot}%{prefix}/lib/debug/usr/libexec/emacs/28.0.50
 %{_datadir}/icons/hicolor/scalable/apps/emacs.svg
 %{_datadir}/icons/hicolor/scalable/apps/emacs.ico
 %{_datadir}/icons/hicolor/scalable/mimetypes/emacs-document.svg
-
-# %files nox
-# %{_bindir}/emacs-%{version}-nox
-# %{_bindir}/emacs-%{version}-nox.pdmp
-# %attr(0755,-,-) %ghost %{_bindir}/emacs
-# %attr(0755,-,-) %ghost %{_bindir}/emacs-nox
+%{_datadir}/glib-2.0/schemas/org.gnu.emacs.defaults.gschema.xml
 
 %files common -f common-filelist -f el-filelist
 %config(noreplace) %{_sysconfdir}/skel/.emacs
@@ -434,6 +391,7 @@ rm -rf %{buildroot}%{prefix}/lib/debug/usr/libexec/emacs/28.0.50
 %dir %{_datadir}/emacs/%{version}
 %{_datadir}/emacs/%{version}/etc
 %{_datadir}/emacs/%{version}/site-lisp
+%{_libdir}/emacs/%{version}
 %{_libexecdir}/emacs
 %{_userunitdir}/emacs.service
 %attr(0644,root,root) %config(noreplace) %{_datadir}/emacs/site-lisp/default.el
