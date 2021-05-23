@@ -1,15 +1,25 @@
 %global _hardened_build 1
 
+%global commit 67a4c8b5ad9ebfb3fa2c7fae433aa6b6b5e92154
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global commit_date 20210522
+%global gitrel      .%{commit_date}.git%{shortcommit}
+
+#https://github.com/emacs-mirror/emacs/archive/67a4c8b5ad9ebfb3fa2c7fae433aa6b6b5e92154/emacs-67a4c8b.tar.gz
 # This file is encoded in UTF-8.  -*- coding: utf-8 -*-
 Summary:       GNU Emacs text editor
 Name:          emacs
 Epoch:         1
-Version:       27.2
-Release:       3%{?dist}
+Version:       28.0.50
+Release:       1%{gitrel}%{?dist}
 License:       GPLv3+ and CC0-1.0
 URL:           http://www.gnu.org/software/emacs/
-Source0:       https://ftp.gnu.org/gnu/emacs/emacs-%{version}.tar.xz
-Source1:       https://ftp.gnu.org/gnu/emacs/emacs-%{version}.tar.xz.sig
+Source0:       https://github.com/emacs-mirror/emacs/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+# generate the keyring via:
+# wget https://ftp.gnu.org/gnu/gnu-keyring.gpg
+# gpg2 --import gnu-keyring.gpg
+# gpg2 --armor --export D405AA2C862C54F17EEE6BE0E8BCD7866AFCF978 > gpgkey-D405AA2C862C54F17EEE6BE0E8BCD7866AFCF978.gpg
+
 # generate the keyring via:
 # wget https://ftp.gnu.org/gnu/gnu-keyring.gpg
 # gpg2 --keyring ./gnu-keyring.gpg --armor --export E6C9029C363AD41D787A8EBB91C1262F01EB8D39 > gpgkey-E6C9029C363AD41D787A8EBB91C1262F01EB8D39.gpg
@@ -21,13 +31,11 @@ Source6:       default.el
 # Emacs Terminal Mode, #551949, #617355
 Source7:       emacs-terminal.desktop
 Source8:       emacs-terminal.sh
+Source9:       emacs.service
 Source10:      %{name}.appdata.xml
 # rhbz#713600
 Patch1:        emacs-spellchecker.patch
 Patch2:        emacs-system-crypto-policies.patch
-Patch3:        emacs-glibc-2.34.patch
-Patch4:        emacs-libdir-vs-systemd.patch
-Patch5:        https://lists.gnu.org/archive/html/bug-gnu-emacs/2021-04/txt0tY7uKvJKS.txt#./emacs-modula2.patch
 
 BuildRequires: gcc
 BuildRequires: atk-devel
@@ -75,9 +83,6 @@ BuildRequires: webkit2gtk3-devel
 
 BuildRequires: gnupg2
 
-# For lucid
-BuildRequires: Xaw3d-devel
-
 %ifarch %{ix86}
 BuildRequires: util-linux
 %endif
@@ -105,22 +110,6 @@ language (elisp), and the capability to read mail, news, and more
 without leaving the editor.
 
 This package provides an emacs binary with support for X windows.
-
-%package lucid
-Summary:       GNU Emacs text editor with LUCID toolkit X support
-Requires(preun): %{_sbindir}/alternatives
-Requires(posttrans): %{_sbindir}/alternatives
-Requires:      emacs-common = %{epoch}:%{version}-%{release}
-Provides:      emacs(bin) = %{epoch}:%{version}-%{release}
-
-%description lucid
-Emacs is a powerful, customizable, self-documenting, modeless text
-editor. Emacs contains special code editing features, a scripting
-language (elisp), and the capability to read mail, news, and more
-without leaving the editor.
-
-This package provides an emacs binary with support for X windows
-using LUCID toolkit.
 
 %package nox
 Summary:       GNU Emacs text editor without X support
@@ -186,15 +175,14 @@ Summary: Development header files for Emacs
 Development header files for Emacs.
 
 %prep
-%{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
-%setup -q
+#%{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
+%setup -q -n emacs-%{commit}
 
 %patch1 -p1 -b .spellchecker
 %patch2 -p1 -b .system-crypto-policies
-%patch3 -p1 -b .glibc2.34
-%patch4 -p1 -b .libdir-vs-systemd
-%patch5 -p1
-autoconf
+
+#autoconf
+./autogen.sh
 
 # We prefer our emacs.desktop file
 cp %SOURCE3 etc/emacs.desktop
@@ -248,33 +236,25 @@ LDFLAGS=-Wl,-z,relro;  export LDFLAGS;
 
 %configure --with-dbus --with-gif --with-jpeg --with-png --with-rsvg \
            --with-tiff --with-xft --with-xpm --with-x-toolkit=gtk3 --with-gpm=no \
-           --with-xwidgets --with-modules --with-harfbuzz --with-cairo --with-json
-make bootstrap
-%{setarch} %make_build
-cd ..
+           --with-xwidgets --with-modules --with-harfbuzz --with-cairo --with-json \
+           --with-pgtk --with-native-compilation --enable-link-time-optimization
 
-# Build Lucid binary
-mkdir build-lucid && cd build-lucid
-ln -s ../configure .
-
-LDFLAGS=-Wl,-z,relro;  export LDFLAGS;
-
-%configure --with-dbus --with-gif --with-jpeg --with-png --with-rsvg \
-           --with-tiff --with-xft --with-xpm --with-x-toolkit=lucid --with-gpm=no \
-           --with-modules --with-harfbuzz --with-cairo --with-json
-make bootstrap
+%make_build NATIVE_FULL_AOT=1 bootstrap
 %{setarch} %make_build
 cd ..
 
 # Build binary without X support
 mkdir build-nox && cd build-nox
 ln -s ../configure .
-%configure --with-x=no --with-modules --with-json
+%configure --with-x=no --with-modules --with-json \
+           --with-native-compilation --enable-link-time-optimization
+
+%make_build NATIVE_FULL_AOT=1 bootstrap
 %{setarch} %make_build
 cd ..
 
 # Remove versioned file so that we end up with .1 suffix and only one DOC file
-rm build-{gtk,lucid,nox}/src/emacs-%{version}.*
+rm build-{gtk,nox}/src/emacs-%{version}.*
 
 # Create pkgconfig file
 cat > emacs.pc << EOF
@@ -314,10 +294,6 @@ gunzip %{buildroot}%{_datadir}/emacs/%{version}/lisp/jka-cmpr-hook.el.gz
 
 # Install emacs.pdmp of the emacs with GTK+
 install -p -m 0644 build-gtk/src/emacs.pdmp %{buildroot}%{_bindir}/emacs-%{version}.pdmp
-
-# Install the emacs with LUCID toolkit
-install -p -m 0755 build-lucid/src/emacs %{buildroot}%{_bindir}/emacs-%{version}-lucid
-install -p -m 0644 build-lucid/src/emacs.pdmp %{buildroot}%{_bindir}/emacs-%{version}-lucid.pdmp
 
 # Install the emacs without X
 install -p -m 0755 build-nox/src/emacs %{buildroot}%{_bindir}/emacs-%{version}-nox
@@ -406,14 +382,6 @@ rm %{buildroot}%{_datadir}/icons/hicolor/scalable/mimetypes/emacs-document23.svg
 %posttrans
 %{_sbindir}/alternatives --install %{_bindir}/emacs emacs %{_bindir}/emacs-%{version} 80
 
-%preun lucid
-%{_sbindir}/alternatives --remove emacs %{_bindir}/emacs-%{version}-lucid
-%{_sbindir}/alternatives --remove emacs-lucid %{_bindir}/emacs-%{version}-lucid
-
-%posttrans lucid
-%{_sbindir}/alternatives --install %{_bindir}/emacs emacs %{_bindir}/emacs-%{version}-lucid 70
-%{_sbindir}/alternatives --install %{_bindir}/emacs-lucid emacs-lucid %{_bindir}/emacs-%{version}-lucid 60
-
 %preun nox
 %{_sbindir}/alternatives --remove emacs %{_bindir}/emacs-%{version}-nox
 %{_sbindir}/alternatives --remove emacs-nox %{_bindir}/emacs-%{version}-nox
@@ -439,12 +407,6 @@ rm %{buildroot}%{_datadir}/icons/hicolor/scalable/mimetypes/emacs-document23.svg
 %{_datadir}/icons/hicolor/scalable/apps/emacs.svg
 %{_datadir}/icons/hicolor/scalable/apps/emacs.ico
 %{_datadir}/icons/hicolor/scalable/mimetypes/emacs-document.svg
-
-%files lucid
-%{_bindir}/emacs-%{version}-lucid
-%{_bindir}/emacs-%{version}-lucid.pdmp
-%attr(0755,-,-) %ghost %{_bindir}/emacs
-%attr(0755,-,-) %ghost %{_bindir}/emacs-lucid
 
 %files nox
 %{_bindir}/emacs-%{version}-nox
