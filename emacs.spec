@@ -44,6 +44,7 @@ BuildRequires: fontconfig-devel
 BuildRequires: dbus-devel
 BuildRequires: giflib-devel
 BuildRequires: glibc-devel
+BuildRequires: libgccjit-devel
 BuildRequires: libpng-devel
 BuildRequires: libjpeg-turbo-devel
 BuildRequires: libjpeg-turbo
@@ -76,6 +77,7 @@ BuildRequires: libacl-devel
 BuildRequires: harfbuzz-devel
 BuildRequires: jansson-devel
 BuildRequires: systemd-devel
+BuildRequires: lcms2-devel
 
 BuildRequires: gtk3-devel
 BuildRequires: webkit2gtk3-devel
