@@ -112,21 +112,21 @@ without leaving the editor.
 
 This package provides an emacs binary with support for X windows.
 
-%package nox
-Summary:       GNU Emacs text editor without X support
-Requires(preun): %{_sbindir}/alternatives
-Requires(posttrans): %{_sbindir}/alternatives
-Requires:      emacs-common = %{epoch}:%{version}-%{release}
-Provides:      emacs(bin) = %{epoch}:%{version}-%{release}
+# %package nox
+# Summary:       GNU Emacs text editor without X support
+# Requires(preun): %{_sbindir}/alternatives
+# Requires(posttrans): %{_sbindir}/alternatives
+# Requires:      emacs-common = %{epoch}:%{version}-%{release}
+# Provides:      emacs(bin) = %{epoch}:%{version}-%{release}
 
-%description nox
-Emacs is a powerful, customizable, self-documenting, modeless text
-editor. Emacs contains special code editing features, a scripting
-language (elisp), and the capability to read mail, news, and more
-without leaving the editor.
+# %description nox
+# Emacs is a powerful, customizable, self-documenting, modeless text
+# editor. Emacs contains special code editing features, a scripting
+# language (elisp), and the capability to read mail, news, and more
+# without leaving the editor.
 
-This package provides an emacs binary with no X windows support for running
-on a terminal.
+# This package provides an emacs binary with no X windows support for running
+# on a terminal.
 
 %package common
 Summary:       Emacs common files
@@ -244,14 +244,14 @@ done
 cd ..
 
 # Build binary without X support
-mkdir build-nox && cd build-nox
-ln -s ../configure .
-%configure --with-x=no --with-modules --with-json \
-           --with-native-compilation --enable-link-time-optimization
+# mkdir build-nox && cd build-nox
+# ln -s ../configure .
+# %configure --with-x=no --with-modules --with-json \
+#            --with-native-compilation --enable-link-time-optimization
 
-%make_build NATIVE_FULL_AOT=1 bootstrap
-%{setarch} %make_build
-cd ..
+# %make_build NATIVE_FULL_AOT=1 bootstrap
+# %{setarch} %make_build
+# cd ..
 
 # Remove versioned file so that we end up with .1 suffix and only one DOC file
 rm build-{gtk,nox}/src/emacs-%{version}.*
@@ -296,8 +296,8 @@ gunzip %{buildroot}%{_datadir}/emacs/%{version}/lisp/jka-cmpr-hook.el.gz
 install -p -m 0644 build-gtk/src/emacs.pdmp %{buildroot}%{_bindir}/emacs-%{version}.pdmp
 
 # Install the emacs without X
-install -p -m 0755 build-nox/src/emacs %{buildroot}%{_bindir}/emacs-%{version}-nox
-install -p -m 0644 build-nox/src/emacs.pdmp %{buildroot}%{_bindir}/emacs-%{version}-nox.pdmp
+# install -p -m 0755 build-nox/src/emacs %{buildroot}%{_bindir}/emacs-%{version}-nox
+# install -p -m 0644 build-nox/src/emacs.pdmp %{buildroot}%{_bindir}/emacs-%{version}-nox.pdmp
 
 # Make sure movemail isn't setgid
 chmod 755 %{buildroot}%{emacs_libexecdir}/movemail
@@ -349,9 +349,6 @@ mkdir -p %{buildroot}%{_userunitdir}
 # Emacs 26.1 installs the upstream unit file to /usr/lib64 on 64bit archs, we don't want that
 mv %{buildroot}/usr/lib64/systemd/user/emacs.service %{buildroot}%{_userunitdir}/emacs.service
 
-# Remove duplicate emacs.service file
-rm %{buildroot}%{_datadir}/%{name}/%{version}/etc/%{name}.service
-
 # Install desktop files
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install --dir=%{buildroot}%{_datadir}/applications \
@@ -381,19 +378,22 @@ cat el-*-files common-lisp-dir-files > el-filelist
 # Remove old icon
 rm %{buildroot}%{_datadir}/icons/hicolor/scalable/mimetypes/emacs-document23.svg
 
+# remove debug info
+rm -rf %{buildroot}%{prefix}/lib/debug/usr/libexec/emacs/28.0.50
+
 %preun
 %{_sbindir}/alternatives --remove emacs %{_bindir}/emacs-%{version}
 
 %posttrans
 %{_sbindir}/alternatives --install %{_bindir}/emacs emacs %{_bindir}/emacs-%{version} 80
 
-%preun nox
-%{_sbindir}/alternatives --remove emacs %{_bindir}/emacs-%{version}-nox
-%{_sbindir}/alternatives --remove emacs-nox %{_bindir}/emacs-%{version}-nox
+# %preun nox
+# %{_sbindir}/alternatives --remove emacs %{_bindir}/emacs-%{version}-nox
+# %{_sbindir}/alternatives --remove emacs-nox %{_bindir}/emacs-%{version}-nox
 
-%posttrans nox
-%{_sbindir}/alternatives --install %{_bindir}/emacs emacs %{_bindir}/emacs-%{version}-nox 70
-%{_sbindir}/alternatives --install %{_bindir}/emacs-nox emacs-nox %{_bindir}/emacs-%{version}-nox 60
+# %posttrans nox
+# %{_sbindir}/alternatives --install %{_bindir}/emacs emacs %{_bindir}/emacs-%{version}-nox 70
+# %{_sbindir}/alternatives --install %{_bindir}/emacs-nox emacs-nox %{_bindir}/emacs-%{version}-nox 60
 
 %preun common
 %{_sbindir}/alternatives --remove emacs.etags %{_bindir}/etags.emacs
@@ -407,17 +407,18 @@ rm %{buildroot}%{_datadir}/icons/hicolor/scalable/mimetypes/emacs-document23.svg
 %{_bindir}/emacs-%{version}.pdmp
 %attr(0755,-,-) %ghost %{_bindir}/emacs
 %{_datadir}/applications/emacs.desktop
+%{_datadir}/applications/emacsclient.desktop
 %{_datadir}/appdata/%{name}.appdata.xml
 %{_datadir}/icons/hicolor/*/apps/emacs.png
 %{_datadir}/icons/hicolor/scalable/apps/emacs.svg
 %{_datadir}/icons/hicolor/scalable/apps/emacs.ico
 %{_datadir}/icons/hicolor/scalable/mimetypes/emacs-document.svg
 
-%files nox
-%{_bindir}/emacs-%{version}-nox
-%{_bindir}/emacs-%{version}-nox.pdmp
-%attr(0755,-,-) %ghost %{_bindir}/emacs
-%attr(0755,-,-) %ghost %{_bindir}/emacs-nox
+# %files nox
+# %{_bindir}/emacs-%{version}-nox
+# %{_bindir}/emacs-%{version}-nox.pdmp
+# %attr(0755,-,-) %ghost %{_bindir}/emacs
+# %attr(0755,-,-) %ghost %{_bindir}/emacs-nox
 
 %files common -f common-filelist -f el-filelist
 %config(noreplace) %{_sysconfdir}/skel/.emacs
