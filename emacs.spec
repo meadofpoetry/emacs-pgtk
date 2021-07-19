@@ -1,11 +1,11 @@
 %global _hardened_build 1
 
-%global commit 67a4c8b5ad9ebfb3fa2c7fae433aa6b6b5e92154
+%global commit b242394f24b154f8e20f5abf4b2f826629e99ea6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global commit_date 20210522
 %global gitrel      .%{commit_date}.git%{shortcommit}
 
-#https://github.com/emacs-mirror/emacs/archive/67a4c8b5ad9ebfb3fa2c7fae433aa6b6b5e92154/emacs-67a4c8b.tar.gz
+#https://github.com/emacs-mirror/emacs/archive/b242394f24b154f8e20f5abf4b2f826629e99ea6/emacs-b242394.tar.gz
 # This file is encoded in UTF-8.  -*- coding: utf-8 -*-
 Summary:       GNU Emacs text editor
 Name:          emacs
