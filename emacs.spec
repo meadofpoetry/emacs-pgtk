@@ -2,7 +2,7 @@
 
 %global commit b242394f24b154f8e20f5abf4b2f826629e99ea6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global commit_date 20210522
+%global commit_date 20210718
 %global gitrel      .%{commit_date}.git%{shortcommit}
 
 #https://github.com/emacs-mirror/emacs/archive/b242394f24b154f8e20f5abf4b2f826629e99ea6/emacs-b242394.tar.gz
@@ -302,7 +302,7 @@ install -p -m 0644 emacs.pc %{buildroot}/%{pkgconfig}
 mkdir -p %{buildroot}/%{_datadir}/appdata
 cp -a %SOURCE10 %{buildroot}/%{_datadir}/appdata
 # Upstream ships its own appdata file, but it's quite terse.
-rm %{buildroot}/%{_datadir}/metainfo/emacs.appdata.xml
+rm %{buildroot}/%{_datadir}/metainfo/emacs.metainfo.xml
 
 # Install rpm macro definition file
 mkdir -p %{buildroot}%{_rpmconfigdir}/macros.d
