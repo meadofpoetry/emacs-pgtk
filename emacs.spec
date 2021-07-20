@@ -370,6 +370,8 @@ rm -rf %{buildroot}%{prefix}/lib/debug/usr/libexec/emacs/28.0.50
 %attr(0755,-,-) %ghost %{_bindir}/emacs
 %{_datadir}/applications/emacs.desktop
 %{_datadir}/applications/emacsclient.desktop
+%{_datadir}/applications/emacs-mail.desktop
+%{_datadir}/applications/emacsclient-mail.desktop
 %{_datadir}/appdata/%{name}.appdata.xml
 %{_datadir}/icons/hicolor/*/apps/emacs.png
 %{_datadir}/icons/hicolor/scalable/apps/emacs.svg
