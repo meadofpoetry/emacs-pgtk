@@ -2,7 +2,7 @@
 
 %global commit 9ff6999a060244c7726752f5cb07e8c8d1218f41
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global commit_date 20210718
+%global commit_date 20211014
 %global gitrel      .%{commit_date}.git%{shortcommit}
 
 #https://github.com/emacs-mirror/emacs/archive/b242394f24b154f8e20f5abf4b2f826629e99ea6/emacs-b242394.tar.gz
@@ -10,7 +10,7 @@
 Summary:       GNU Emacs text editor
 Name:          emacs
 Epoch:         1
-Version:       28.0.50
+Version:       28.0.60
 Release:       1%{gitrel}%{?dist}
 License:       GPLv3+ and CC0-1.0
 URL:           http://www.gnu.org/software/emacs/
