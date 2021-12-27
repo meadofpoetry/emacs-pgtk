@@ -1,6 +1,6 @@
 %global _hardened_build 1
 
-%global commit 9ff6999a060244c7726752f5cb07e8c8d1218f41
+%global commit 0fb55c8776d75d08da626f84ca5570da7e95391e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global commit_date 20211014
 %global gitrel      .%{commit_date}.git%{shortcommit}
@@ -10,7 +10,7 @@
 Summary:       GNU Emacs text editor
 Name:          emacs
 Epoch:         1
-Version:       28.0.60
+Version:       29.0.50
 Release:       1%{gitrel}%{?dist}
 License:       GPLv3+ and CC0-1.0
 URL:           http://www.gnu.org/software/emacs/
@@ -203,7 +203,7 @@ LDFLAGS=-Wl,-z,relro;  export LDFLAGS;
 
 %configure --with-dbus --with-gif --with-jpeg --with-png --with-rsvg \
            --with-tiff --with-xft --with-xpm --with-gpm=no \
-           --with-xwidgets --with-modules --with-harfbuzz --with-cairo --with-json \
+           --with-x-toolkit=no --with-modules --with-harfbuzz --with-cairo --with-json \
            --with-pgtk --with-native-compilation --enable-link-time-optimization
 
 %make_build NATIVE_FULL_AOT=1 bootstrap
@@ -260,7 +260,7 @@ rm %{buildroot}%{_bindir}/emacs
 touch %{buildroot}%{_bindir}/emacs
 
 # Remove emacs.pdmp from common
-rm %{buildroot}%{emacs_libexecdir}/emacs.pdmp
+rm %{buildroot}%{emacs_libexecdir}/*.pdmp
 
 # Do not compress the files which implement compression itself (#484830)
 gunzip %{buildroot}%{_datadir}/emacs/%{version}/lisp/jka-compr.el.gz
