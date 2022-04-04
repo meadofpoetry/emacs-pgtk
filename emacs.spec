@@ -1,6 +1,6 @@
 %global _hardened_build 1
 
-%global commit 0fb55c8776d75d08da626f84ca5570da7e95391e
+%global commit 8103b060d89ac63a12c439087bd46c30da72cd97
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global commit_date 20211014
 %global gitrel      .%{commit_date}.git%{shortcommit}
@@ -9,7 +9,7 @@
 # This file is encoded in UTF-8.  -*- coding: utf-8 -*-
 Summary:       GNU Emacs text editor
 Name:          emacs
-Epoch:         1
+Epoch:         2
 Version:       29.0.50
 Release:       1%{gitrel}%{?dist}
 License:       GPLv3+ and CC0-1.0
