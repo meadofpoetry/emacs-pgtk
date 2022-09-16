@@ -1,15 +1,15 @@
 %global _hardened_build 1
 
-%global commit 8103b060d89ac63a12c439087bd46c30da72cd97
+%global commit e3b79c641e04a9e8681e7e27db3db3e4beec0fa4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global commit_date 20211014
+%global commit_date 20220916
 %global gitrel      .%{commit_date}.git%{shortcommit}
 
 #https://github.com/emacs-mirror/emacs/archive/b242394f24b154f8e20f5abf4b2f826629e99ea6/emacs-b242394.tar.gz
 # This file is encoded in UTF-8.  -*- coding: utf-8 -*-
 Summary:       GNU Emacs text editor
 Name:          emacs
-Epoch:         2
+Epoch:         1
 Version:       29.0.50
 Release:       1%{gitrel}%{?dist}
 License:       GPLv3+ and CC0-1.0
@@ -77,6 +77,7 @@ BuildRequires: libacl-devel
 BuildRequires: harfbuzz-devel
 BuildRequires: jansson-devel
 BuildRequires: systemd-devel
+BuildRequires: systemd-rpm-macros
 BuildRequires: lcms2-devel
 
 BuildRequires: gtk3-devel
