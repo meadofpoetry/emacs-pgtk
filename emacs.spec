@@ -1,8 +1,8 @@
 %global _hardened_build 1
 
-%global commit e3b79c641e04a9e8681e7e27db3db3e4beec0fa4
+%global commit f4a3e8f29f05f19263d3f600823cdbc0b1cfd3ef
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global commit_date 20220916
+%global commit_date 20230121
 %global gitrel      .%{commit_date}.git%{shortcommit}
 
 #https://github.com/emacs-mirror/emacs/archive/b242394f24b154f8e20f5abf4b2f826629e99ea6/emacs-b242394.tar.gz
@@ -10,7 +10,7 @@
 Summary:       GNU Emacs text editor
 Name:          emacs
 Epoch:         1
-Version:       29.0.50
+Version:       30.0.50
 Release:       1%{gitrel}%{?dist}
 License:       GPLv3+ and CC0-1.0
 URL:           http://www.gnu.org/software/emacs/
@@ -45,6 +45,7 @@ BuildRequires: dbus-devel
 BuildRequires: giflib-devel
 BuildRequires: glibc-devel
 BuildRequires: libgccjit-devel
+BuildRequires: libtree-sitter-devel
 BuildRequires: libpng-devel
 BuildRequires: libjpeg-turbo-devel
 BuildRequires: libjpeg-turbo
@@ -205,7 +206,7 @@ LDFLAGS=-Wl,-z,relro;  export LDFLAGS;
 %configure --with-dbus --with-gif --with-jpeg --with-png --with-rsvg \
            --with-tiff --with-xft --with-xpm --with-gpm=no \
            --with-x-toolkit=no --with-modules --with-harfbuzz --with-cairo --with-json \
-           --with-pgtk --with-native-compilation --enable-link-time-optimization
+           --with-pgtk --with-native-compilation --with-tree-sitter --enable-link-time-optimization
 
 %make_build NATIVE_FULL_AOT=1 bootstrap
 %{setarch} %make_build
