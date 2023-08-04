@@ -1,8 +1,8 @@
 %global _hardened_build 1
 
-%global commit f4a3e8f29f05f19263d3f600823cdbc0b1cfd3ef
+%global commit 9026990c6685e87c328f4fcc575ef644c2f5595a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global commit_date 20230121
+%global commit_date 20230804
 %global gitrel      .%{commit_date}.git%{shortcommit}
 
 #https://github.com/emacs-mirror/emacs/archive/b242394f24b154f8e20f5abf4b2f826629e99ea6/emacs-b242394.tar.gz
@@ -165,7 +165,7 @@ Development header files for Emacs.
 #%{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
 %setup -q -n emacs-%{commit}
 
-%patch1 -p1 -b .system-crypto-policies
+%patch 1 -p1 -b .system-crypto-policies
 
 #autoconf
 ./autogen.sh
