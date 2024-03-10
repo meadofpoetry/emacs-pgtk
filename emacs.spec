@@ -1,8 +1,8 @@
 %global _hardened_build 1
 
-%global commit 9026990c6685e87c328f4fcc575ef644c2f5595a
+%global commit f3da3d1c68bef60ef28d67c6d8fa5d0cba8c9f08
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global commit_date 20230804
+%global commit_date 20240310
 %global gitrel      .%{commit_date}.git%{shortcommit}
 
 #https://github.com/emacs-mirror/emacs/archive/b242394f24b154f8e20f5abf4b2f826629e99ea6/emacs-b242394.tar.gz
